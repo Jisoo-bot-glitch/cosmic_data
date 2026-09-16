@@ -48,7 +48,7 @@ def main() -> None:
             is_operational=True,
         )
     except ValidationError as e:
-        print(e)
+        print(e.errors()[0]["msg"].replace("Value error, ", ""))
 
 
 if __name__ == "__main__":
