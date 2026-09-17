@@ -18,8 +18,8 @@ class AlienContact(BaseModel):
     signal_strength: float = Field(ge=0.0, le=10.0)
     duration_minutes: int = Field(ge=1, le=1440)
     witness_count: int = Field(ge=1, le=100)
-    message_received: str | None= Field(default=None, max_length=500)
-    is_verified: bool = False 
+    message_received: str | None = Field(default=None, max_length=500)
+    is_verified: bool = False
 
     @model_validator(mode='after')
     def check_rules(self):
@@ -27,10 +27,17 @@ class AlienContact(BaseModel):
             raise ValueError("Contact ID must start with 'AC'")
         if self.contact_type == ContactType.PHYSICAL and not self.is_verified:
             raise ValueError("Physical contact reports must be verified")
-        if self.contact_type == ContactType.TELEPATHIC and self.witness_count < 3:
-            raise ValueError("Telepathic contact requires at least 3 witnesses")
+        if (
+            self.contact_type == ContactType.TELEPATHIC
+            and self.witness_count < 3
+        ):
+            raise ValueError(
+                "Telepathic contact requires at least 3 witnesses"
+            )
         if self.signal_strength > 7.0 and not self.message_received:
-            raise ValueError("Strong signals (> 7.0) should include received messages")
+            raise ValueError(
+                "Strong signals (> 7.0) should include received messages"
+            )
         return self
 
 
@@ -71,7 +78,7 @@ def main() -> None:
             witness_count=2,
             message_received="Greetings from Zeta Reticuli",
         )
-    except  ValidationError as e:
+    except ValidationError as e:
         print(e.errors()[0]["msg"].replace("Value error, ", ""))
 
 
