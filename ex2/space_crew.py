@@ -37,21 +37,27 @@ class SpaceMission(BaseModel):
             raise ValueError("Mission ID must start with 'M'")
         has_leader = False
         for member in self.crew:
-            if member.rank == CrewRank.COMMANDER or member.rank == CrewRank.CAPTAIN:
+            if member.rank in (CrewRank.COMMANDER, CrewRank.CAPTAIN):
                 has_leader = True
         if not has_leader:
-            raise ValueError("Mission must have at least one Commander or Captain")
+            raise ValueError(
+                "Mission must have at least one Commander or Captain"
+            )
         if self.duration_days > 365:
-            experienced = 0 
+            experienced = 0
             for member in self.crew:
                 if member.years_experience >= 5:
                     experienced += 1
-            if experienced < len(self.crew) / 2: 
-                raise ValueError("Long missions (> 365 days) need 50% experienced crew (5+ years)")
+            if experienced < len(self.crew) / 2:
+                raise ValueError(
+                    "Long missions (> 365 days) need 50% experienced crew "
+                    "(5+ years)"
+                )
         for member in self.crew:
             if not member.is_active:
                 raise ValueError("All crew members must be active")
         return self
+
 
 def main() -> None:
     print("Space Mission Crew Validation")
@@ -81,7 +87,7 @@ def main() -> None:
         rank=CrewRank.OFFICER,
         age=41,
         specialization="Engineering",
-        years_experience=18,   
+        years_experience=18,
     )
 
     mission = SpaceMission(
@@ -120,9 +126,9 @@ def main() -> None:
             mission_status="planned",
             budget_millions=2500,
         )
-    except  ValidationError as e:
+    except ValidationError as e:
         print(e.errors()[0]["msg"].replace("Value error, ", ""))
-    
-    
+
+
 if __name__ == "__main__":
     main()
